@@ -3,7 +3,7 @@
 # rm-calculator
 
 ## 🚀 ライブデモ
-- 本番環境: [ここにNetlifyのURLを貼り付ける]
+- 本番環境: https://rm-calculator-science.netlify.app/
 
 ## 🛠️ 採用ロジック（スペック管理）
 
