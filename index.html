@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>種目別に計算式を使い分けた RM 換算表 | ベンチ・スクワット・デッドリフト</title>
+  <meta name="description" content="科学的根拠に基づいたRM換算表。ベンチプレスはBrzycki式、スクワット・デッドリフトは修正Epley式と種目ごとに最適な計算式を採用。使用重量と回数から推定1RMをすぐ確認できます。">
+  <meta name="keywords" content="RM換算表,1RM計算,推定1RM,ベンチプレス,スクワット,デッドリフト,Brzycki式,Epley式,種目別計算式,科学的根拠,根拠に基づくRM計算,筋トレ,重量換算,レップマックス">
+  <meta name="author" content="@kenny_aero">
+  <link rel="canonical" href="https://YOUR_DOMAIN/rm_table/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://YOUR_DOMAIN/rm_table/">
+  <meta property="og:title" content="種目別に計算式を使い分けた RM 換算表 | ベンチ・スクワット・デッドリフト">
+  <meta property="og:description" content="科学的根拠に基づいたRM換算表。ベンチプレスはBrzycki式、スクワット・デッドリフトは修正Epley式と種目ごとに最適な計算式を採用。使用重量と回数から推定1RMをすぐ確認できます。">
+  <meta property="og:locale" content="ja_JP">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    /* ── タブ ── */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      border-radius: 8px;
+      background: #2a2a4a;
+      color: #aaa;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .tab-btn:hover { background: #3a3a6a; color: #ddd; }
+
+    .tab-btn.active {
+      background: #e84393;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(232, 67, 147, 0.4);
+    }
+
+    /* ── パネル ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .panel-header {
+      margin-bottom: 10px;
+    }
+
+    .panel-header h2 {
+      font-size: 1.05rem;
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .formula-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      background: #2a2a4a;
+      color: #9b9bca;
+      line-height: 1.6;
+    }
+
+    /* ── 刻み幅セレクター ── */
+    .step-selector {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .step-label {
+      font-size: 0.75rem;
+      color: #666;
+      margin-right: 2px;
+    }
+
+    .step-btn {
+      padding: 4px 12px;
+      border: 1px solid #3a3a6a;
+      border-radius: 20px;
+      background: transparent;
+      color: #777;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .step-btn:hover { border-color: #6060aa; color: #bbb; }
+
+    .step-btn.active {
+      background: #3a3a6a;
+      border-color: #6060aa;
+      color: #fff;
+    }
+
+    /* ── アコーディオン（ベンチ用） ── */
+    .acc-item {
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #2e2e5a;
+      overflow: hidden;
+    }
+
+    .acc-header {
+      width: 100%;
+      background: #1e1e3e;
+      border: none;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: background 0.2s;
+      text-align: left;
+    }
+
+    .acc-header:hover { background: #2a2a50; }
+
+    .acc-header.open {
+      background: #252550;
+      border-bottom: 1px solid #2e2e5a;
+    }
+
+    .acc-title-wrap { display: flex; align-items: center; gap: 10px; }
+
+    .acc-range-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #e0e0ff;
+    }
+
+    .acc-sub {
+      font-size: 0.72rem;
+      color: #888;
+      font-weight: 400;
+    }
+
+    .acc-arrow {
+      font-size: 0.75rem;
+      color: #666;
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+
+    .acc-header.open .acc-arrow { transform: rotate(180deg); color: #aaa; }
+
+    .acc-body {
+      display: none;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .acc-body.open { display: block; }
+
+    /* ── テーブルラッパー ── */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+      border: 1px solid #2e2e5a;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      margin-top: 12px;
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      font-size: 0.82rem;
+    }
+
+    thead tr th {
+      background: #12122a;
+      color: #aaa;
+      font-weight: 600;
+      text-align: center;
+      padding: 10px 10px;
+      white-space: nowrap;
+      border-bottom: 2px solid #2e2e5a;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    thead tr th:first-child,
+    tbody tr td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: #16163a;
+      font-weight: 700;
+      color: #c8c8ff;
+      text-align: center;
+      box-shadow: 2px 0 0 #2e2e5a;
+    }
+
+    thead tr th:first-child {
+      z-index: 3;
+      color: #9090c0;
+    }
+
+    tbody tr td {
+      text-align: center;
+      padding: 7px 10px;
+      border-bottom: 1px solid #1e1e3a;
+      color: #d0d0e8;
+      white-space: nowrap;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover td           { background: #22224a !important; color: #ffffff; }
+    tbody tr:hover td:first-child { background: #2a2a5a !important; }
+
+    .col-1rm { color: #f0a030 !important; font-weight: 700; }
+
+    tbody tr:nth-child(even) td { background: #1d1d3a; }
+    tbody tr:nth-child(odd)  td { background: #191930; }
+
+    /* ── セクションラベル ── */
+    .section-label {
+      margin-top: 16px;
+      margin-bottom: 2px;
+      padding-left: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #6060aa;
+      text-transform: uppercase;
+    }
+
+    /* ── 凡例 ── */
+    .legend {
+      margin-top: 10px;
+      font-size: 0.72rem;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      justify-content: flex-end;
+    }
+
+    .legend-dot {
+      width: 10px; height: 10px;
+      background: #f0a030;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: #444;
+    }
+
+    /* ── モバイル最適化 ── */
+    @media (max-width: 520px) {
+      body { padding: 16px 8px; }
+      h1   { font-size: 1.3rem; }
+      .tab-btn { font-size: 0.75rem; padding: 10px 4px; }
+      table { font-size: 0.65rem; }
+      thead tr th { padding: 7px 4px; }
+      tbody tr td { padding: 6px 3px; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>RM 換算表</h1>
+<p class="subtitle">使用重量・回数 → 推定1RM (kg)</p>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('bench', this)">🏋️ ベンチ</button>
+  <button class="tab-btn"        onclick="switchTab('squat', this)">🦵 スクワット</button>
+<button class="tab-btn"        onclick="switchTab('other', this)">💪 その他</button>
+</div>
+
+<!-- ベンチプレス -->
+<div id="bench" class="panel active">
+  <div class="panel-header">
+    <h2>ベンチプレス</h2>
+    <span class="formula-badge">Brzycki式 &nbsp; 1RM = 重量 × 36 ÷ (37 − 回数)</span>
+    <div class="step-selector">
+      <span class="step-label">刻み幅：</span>
+      <button class="step-btn active" onclick="changeStep('bench', 5,    this)">5 kg</button>
+      <button class="step-btn"        onclick="changeStep('bench', 2.5,  this)">2.5 kg</button>
+      <button class="step-btn"        onclick="changeStep('bench', 1.25, this)">1.25 kg</button>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-title-wrap">
+        <span class="acc-range-label">40 – 80 kg</span>
+        <span class="acc-sub">継続こそ力なり</span>
+      </span>
+      <span class="acc-arrow">▼</span>
+    </button>
+    <div class="acc-body">
+      <div id="bench-light-table"></div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-title-wrap">
+        <span class="acc-range-label">80 – 120 kg</span>
+        <span class="acc-sub">エリートトレーニー用</span>
+      </span>
+      <span class="acc-arrow">▼</span>
+    </button>
+    <div class="acc-body">
+      <div id="bench-mid-table"></div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-title-wrap">
+        <span class="acc-range-label">120 kg 以上</span>
+        <span class="acc-sub">化け物のあなたへ</span>
+      </span>
+      <span class="acc-arrow">▼</span>
+    </button>
+    <div class="acc-body">
+      <div id="bench-heavy-table"></div>
+    </div>
+  </div>
+
+  <p class="legend"><span class="legend-dot"></span>1回列 = 使用重量 = 1RM</p>
+</div>
+
+<!-- スクワット・デッドリフト -->
+<div id="squat" class="panel">
+  <div class="panel-header">
+    <h2>スクワット・デッドリフト</h2>
+    <span class="formula-badge">修正Epley式 &nbsp; 1RM = 重量 × (1 + (回数 − 1) ÷ 30)</span>
+    <div class="step-selector">
+      <span class="step-label">刻み幅：</span>
+      <button class="step-btn active" onclick="changeStep('squat', 5,   this)">5 kg</button>
+      <button class="step-btn"        onclick="changeStep('squat', 2.5, this)">2.5 kg</button>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-title-wrap">
+        <span class="acc-range-label">60 – 100 kg</span>
+        <span class="acc-sub">継続こそ力なり</span>
+      </span>
+      <span class="acc-arrow">▼</span>
+    </button>
+    <div class="acc-body">
+      <div id="squat-light-table"></div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-title-wrap">
+        <span class="acc-range-label">100 – 160 kg</span>
+        <span class="acc-sub">エリートトレーニー用</span>
+      </span>
+      <span class="acc-arrow">▼</span>
+    </button>
+    <div class="acc-body">
+      <div id="squat-mid-table"></div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-title-wrap">
+        <span class="acc-range-label">160 kg 以上</span>
+        <span class="acc-sub">化け物のあなたへ</span>
+      </span>
+      <span class="acc-arrow">▼</span>
+    </button>
+    <div class="acc-body">
+      <div id="squat-heavy-table"></div>
+    </div>
+  </div>
+
+  <p class="legend"><span class="legend-dot"></span>1回列 = 使用重量 = 1RM</p>
+</div>
+
+<!-- その他 -->
+<div id="other" class="panel">
+  <div class="panel-header">
+    <h2>その他種目 &nbsp; 10 – 50 kg</h2>
+    <span class="formula-badge">Brzycki式 &nbsp; 1RM = 重量 × 36 ÷ (37 − 回数)</span>
+    <div class="step-selector">
+      <span class="step-label">刻み幅：</span>
+      <button class="step-btn active" onclick="changeStep('other', 5,    this)">5 kg</button>
+      <button class="step-btn"        onclick="changeStep('other', 2.5,  this)">2.5 kg</button>
+      <button class="step-btn"        onclick="changeStep('other', 1.25, this)">1.25 kg</button>
+    </div>
+  </div>
+  <div class="table-wrap" id="other-table"></div>
+  <p class="legend"><span class="legend-dot"></span>1回列 = 使用重量 = 1RM</p>
+</div>
+
+<footer>Made by @kenny_aero &nbsp;|&nbsp; All Rights Reserved.</footer>
+
+<script>
+  const configs = {
+    other: { end: 50, formula: brzycki },
+  };
+
+  function brzycki(w, r) { return w * 36 / (37 - r); }
+  function squat(w, r)   { return w * (1 + (r - 1) / 30); }
+
+  function fmt(val) {
+    return (Math.round(val * 2) / 2).toFixed(1);
+  }
+
+  function range(start, end, step) {
+    const arr = [];
+    for (let w = start; w <= end; w = Math.round((w + step) * 1000) / 1000) {
+      arr.push(w);
+    }
+    return arr;
+  }
+
+  function buildTable(id, weights, formulaFn) {
+    const reps = Array.from({length: 12}, (_, i) => i + 1);
+    let html = '<table><thead><tr><th>kg</th>';
+    reps.forEach(r => { html += `<th>${r}</th>`; });
+    html += '</tr></thead><tbody>';
+    weights.forEach(w => {
+      html += '<tr>';
+      html += `<td>${w}</td>`;
+      reps.forEach(r => {
+        const cls = r === 1 ? ' class="col-1rm"' : '';
+        html += `<td${cls}>${fmt(formulaFn(w, r))}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById(id + '-table').innerHTML = html;
+  }
+
+  function buildBenchTables(step) {
+    const all = range(40, 200, step);
+    buildTable('bench-light', all.filter(w => w <= 80),            brzycki);
+    buildTable('bench-mid',   all.filter(w => w > 80 && w <= 120), brzycki);
+    buildTable('bench-heavy', all.filter(w => w > 120),            brzycki);
+  }
+
+  function buildSquatTables(step) {
+    const all = range(60, 300, step);
+    buildTable('squat-light', all.filter(w => w <= 100),             squat);
+    buildTable('squat-mid',   all.filter(w => w > 100 && w <= 160),  squat);
+    buildTable('squat-heavy', all.filter(w => w > 160),              squat);
+  }
+
+  function changeStep(id, step, btn) {
+    btn.closest('.step-selector').querySelectorAll('.step-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (id === 'bench') {
+      buildBenchTables(step);
+    } else if (id === 'squat') {
+      buildSquatTables(step);
+    } else {
+      const c = configs[id];
+      buildTable(id, range(step, c.end, step), c.formula);
+    }
+  }
+
+  function toggleAcc(btn) {
+    const body = btn.nextElementSibling;
+    btn.classList.toggle('open');
+    body.classList.toggle('open');
+  }
+
+  function switchTab(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // 初期描画
+  buildBenchTables(5);
+  buildSquatTables(5);
+Object.keys(configs).forEach((id) => {
+    const c = configs[id];
+    buildTable(id, range(5, c.end, 5), c.formula);
+  });
+</script>
+
+</body>
+</html>
